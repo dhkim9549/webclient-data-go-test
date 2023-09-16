@@ -49,6 +49,7 @@ public class ConsumingRestApplication implements CommandLineRunner {
         for(String arg : args) {
             log.info(">>> arg = " + arg);
         }
+	/*
         for(int i = 0; i <= 100000000; i++) {
             Thread.sleep(100);
             int randomNum = ThreadLocalRandom.current().nextInt(0, 10);
@@ -60,9 +61,11 @@ public class ConsumingRestApplication implements CommandLineRunner {
             long nano2 = System.currentTimeMillis();
 	    log.info("duration = " + (nano2 - nano));
         }
-        // webClientT2();
-        // webFlux();
+	*/
+        webFlux();
     }
+
+    String urlStr = "https://apis.data.go.kr/B551408/jnse-rcmd-info/jnse-rcmd-list?serviceKey=PW2VvwTvkcs%2FWMVLduXzeRL0BPjOYH%2B0wMnsQiyy5UgcrukEjAurATJUNkeA7T%2Bj47s3GAmLzHduip%2BfbxESlQ%3D%3D&dataType=JSON&pageNo=1&numOfRows=100&rentGrntAmt=AAA&trgtLwdgCd=1111111111&age=111&weddStcd=1&myIncmAmt=0&myTotDebtAmt=0&ownHsCnt=0&grntPrmeActnDvcdCont=";
 
     public void restT() throws Exception {
 
@@ -70,59 +73,52 @@ public class ConsumingRestApplication implements CommandLineRunner {
 
         RestTemplate restTemplate = new RestTemplate();
         String response = restTemplate.getForObject(
-            new URI("https://apis.data.go.kr/B551408/jnse-rcmd-info/jnse-rcmd-list?serviceKey=PW2VvwTvkcs%2FWMVLduXzeRL0BPjOYH%2B0wMnsQiyy5UgcrukEjAurATJUNkeA7T%2Bj47s3GAmLzHduip%2BfbxESlQ%3D%3D&dataType=JSON&pageNo=1&numOfRows=100&rentGrntAmt=" + randomNum + "&trgtLwdgCd=1111111111&age=111&weddStcd=1&myIncmAmt=0&myTotDebtAmt=0&ownHsCnt=0&grntPrmeActnDvcdCont="),
-            String.class);
+            new URI(urlStr.replaceAll("AAA", "" + randomNum)),
+            String.class
+            );
 
         log.info("response = " + response);
     }
 
-    ArrayList addrLst = null;
+    public void webFlux() {
 
+        Flux.interval(Duration.ofMillis(4000))
+            .subscribe(num -> {
+                log.info("ansin num = " + num);
+                checkSise();
+            });
 
+    }
 
+    WebClient client = null;
 
-	public void webFlux() {
+    public void checkSise() {
 
-		Flux.interval(Duration.ofSeconds(600))
-                        .subscribe(num -> {
-                                log.info("ansin num = " + num);
-				checkSise("https://ansim.hf.go.kr");
-                        });
+        if(client == null) {
+            client = WebClient.builder()
+               .build();
+        }
 
-		Flux.interval(Duration.ofSeconds(600))
-                        .subscribe(num -> {
-                                log.info("bada num = " + num);
-                                checkSise("http://bada.ai");
-                        });
+        int randomNum = ThreadLocalRandom.current().nextInt(10, 10000);
 
-	}
+	URI uri = null;
 
-	WebClient client = null;
+	try {
+            uri = new URI(urlStr.replaceAll("AAA", "" + randomNum));
+        } catch(Exception e) {
+        }
 
-	public void checkSise(String baseUrl) {
+        long nano = System.currentTimeMillis();
 
-		if(client == null) {
-			client = WebClient.builder()
-                        	.baseUrl(baseUrl)
-                        	.build();
-		}
-
-		String urlBuilder = new String("/siseapi/sise/addr3");
-                urlBuilder = urlBuilder.concat("?" + "lwdgCd" + "=" + "26290106");
-                urlBuilder = urlBuilder.concat("&" + "ltnoBno" + "=" + "1858");
-                urlBuilder = urlBuilder.concat("&" + "ltnoBuno" + "=" + "");
-
-                log.info("urlBuilder = " + urlBuilder);
-
-		client.get()
-			.uri(urlBuilder)
-			.accept(MediaType.APPLICATION_JSON)
-			.retrieve()
-			.bodyToMono(Iterable.class)
-			.subscribe(addrArr -> {
-				for(Object addr : addrArr) {
-					log.info("addr = " + addr);
-				}
-		});
-	}
+        client.get()
+            .uri(uri)
+            .accept(MediaType.APPLICATION_JSON)
+            .retrieve()
+            .bodyToMono(String.class)
+            .subscribe(rspsStr -> {
+                log.info("rspsStr= " + rspsStr);
+                long nano2 = System.currentTimeMillis();
+                log.info("duration = " + (nano2 - nano));
+            });
+    }
 }

@@ -1,6 +1,5 @@
 package com.example.consumingrest;
 
-import java.net.URLEncoder;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,17 +16,7 @@ import reactor.core.publisher.Mono;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.http.MediaType;
 import reactor.core.publisher.Flux;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpEntity;
-import org.springframework.web.util.UriComponentsBuilder;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.util.UriComponents; 
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.TimeUnit;
-import org.springframework.web.util.UriUtils;
-import org.springframework.web.util.DefaultUriBuilderFactory;
 import java.util.concurrent.ThreadLocalRandom;
 
 @SpringBootApplication
